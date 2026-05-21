@@ -17,16 +17,15 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
+dependencies = [
+    "mcp[cli]>=1.0.0",
+    "httpx>=0.27.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/pimentelleo/azure-pricing-mcp"
 Repository = "https://github.com/pimentelleo/azure-pricing-mcp"
 Issues = "https://github.com/pimentelleo/azure-pricing-mcp/issues"
-
-dependencies = [
-    "mcp[cli]>=1.0.0",
-    "httpx>=0.27.0",
-]
 
 [project.scripts]
 azure-pricing-mcp = "azure_pricing_mcp.server:main"
