@@ -43,6 +43,25 @@ Once connected to an MCP client (Claude Desktop, Cursor, Claude Code, etc.), you
 
 ## Configuration
 
+### Using `mcp.json` (VS Code / GitHub Copilot)
+
+Create an `mcp.json` file in your project's `.vscode` folder (`.vscode/mcp.json`) to share the server with your team:
+
+```json
+{
+  "servers": {
+    "azure-pricing": {
+      "command": "uvx",
+      "args": ["azure-pricing-mcp"]
+    }
+  }
+}
+```
+
+Or add it at the user level (`~/.vscode/mcp.json`) to make it available across all projects.
+
+> **Tip:** When opening a project with an `mcp.json`, VS Code will prompt you to start the MCP server automatically.
+
 ### Claude Desktop
 
 Add to your `claude_desktop_config.json`:
@@ -66,7 +85,22 @@ claude mcp add azure-pricing -- uvx azure-pricing-mcp
 
 ### Cursor
 
-Add to your Cursor MCP settings:
+Add to your Cursor MCP settings (`.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "azure-pricing": {
+      "command": "uvx",
+      "args": ["azure-pricing-mcp"]
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add to your Windsurf MCP config (`~/.windsurf/mcp.json`):
 
 ```json
 {
