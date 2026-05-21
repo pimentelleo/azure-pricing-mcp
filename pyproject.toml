@@ -1,6 +1,6 @@
 [project]
 name = "azure-pricing-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server for estimating Azure service costs using the Azure Retail Prices API"
 readme = "README.md"
 license = { text = "MIT" }
