@@ -113,6 +113,33 @@ Add to your Windsurf MCP config (`~/.windsurf/mcp.json`):
 }
 ```
 
+## Running with PM2
+
+An `ecosystem.config.js` is included for process management. First make sure dependencies are installed:
+
+```bash
+uv sync
+```
+
+Then start with PM2:
+
+```bash
+pm2 start ecosystem.config.js
+
+# Check status
+pm2 status
+
+# View logs
+pm2 logs azure-pricing-mcp
+
+# Stop
+pm2 stop azure-pricing-mcp
+
+# Restart on system boot
+pm2 startup
+pm2 save
+```
+
 ## Development
 
 ```bash
