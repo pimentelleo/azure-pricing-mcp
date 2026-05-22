@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
+from azure_pricing_mcp import __version__
 from azure_pricing_mcp.azure_api import AzurePricingClient
 
 # ── Server setup ─────────────────────────────────────────────────────
@@ -278,6 +280,9 @@ async def list_regions(
 
 def main() -> None:
     """Run the Azure Pricing MCP server (stdio transport)."""
+    if "--version" in sys.argv or "-V" in sys.argv:
+        print(f"azure-pricing-mcp {__version__}")
+        return
     mcp.run(transport="stdio")
 
 
