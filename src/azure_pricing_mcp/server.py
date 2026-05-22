@@ -35,11 +35,12 @@ def _format_price_item(item: dict[str, Any]) -> str:
     lines = [
         f"  Product: {item.get('productName', 'N/A')}",
         f"  SKU: {item.get('skuName', 'N/A')}",
+        f"  ARM SKU: {item.get('armSkuName', 'N/A')}",
         f"  Meter: {item.get('meterName', 'N/A')}",
         f"  Region: {item.get('armRegionName', 'N/A')}",
         f"  Retail Price: {item.get('retailPrice', 'N/A')} {item.get('currencyCode', '')}",
         f"  Unit: {item.get('unitOfMeasure', 'N/A')}",
-        f"  Type: {item.get('type', 'N/A')}",
+        f"  Price Type: {item.get('type', 'N/A')}",
     ]
     return "\n".join(lines)
 
@@ -51,8 +52,10 @@ def _format_price_item(item: dict[str, Any]) -> str:
 async def search_prices(
     service_name: str | None = None,
     arm_region_name: str | None = None,
+    arm_sku_name: str | None = None,
     sku_name: str | None = None,
     product_name: str | None = None,
+    price_type: str | None = None,
     currency_code: str = "USD",
     max_results: int = 10,
 ) -> str:
@@ -60,22 +63,26 @@ async def search_prices(
 
     Args:
         service_name: Azure service name (e.g. "Virtual Machines", "Storage")
-        arm_region_name: Azure region (e.g. "eastus", "westeurope")
-        sku_name: SKU name (e.g. "D2 v3", "Standard_LRS")
+        arm_region_name: Azure region (e.g. "eastus", "westeurope", "brazilsouth")
+        arm_sku_name: ARM SKU name for exact match (e.g. "Standard_D8s_v5", "Standard_B2s")
+        sku_name: SKU display name (e.g. "D2 v3", "Standard_LRS"). Use arm_sku_name for exact VM matching.
         product_name: Product name (e.g. "Virtual Machines Dv3 Series")
+        price_type: Price type filter: "Consumption" (pay-as-you-go), "Reservation" (reserved instances), or "DevTestConsumption"
         currency_code: Currency code (default: USD). Examples: USD, EUR, BRL, GBP
         max_results: Maximum number of results to return (default: 10, max: 50)
     """
     max_results = min(max_results, 50)
 
-    if not any([service_name, arm_region_name, sku_name, product_name]):
-        return "Error: Please provide at least one filter (service_name, arm_region_name, sku_name, or product_name)."
+    if not any([service_name, arm_region_name, arm_sku_name, sku_name, product_name]):
+        return "Error: Please provide at least one filter (service_name, arm_region_name, arm_sku_name, sku_name, or product_name)."
 
     items = await _client.query_prices(
         service_name=service_name,
         arm_region_name=arm_region_name,
+        arm_sku_name=arm_sku_name,
         sku_name=sku_name,
         product_name=product_name,
+        price_type=price_type,
         currency_code=currency_code,
         max_results=max_results,
     )
@@ -95,6 +102,7 @@ async def search_prices(
 @mcp.tool()
 async def estimate_cost(
     service_name: str,
+    arm_sku_name: str | None = None,
     sku_name: str | None = None,
     arm_region_name: str | None = None,
     quantity: float = 1.0,
@@ -108,7 +116,8 @@ async def estimate_cost(
 
     Args:
         service_name: Azure service name (e.g. "Virtual Machines")
-        sku_name: SKU name to narrow down (e.g. "D2 v3")
+        arm_sku_name: ARM SKU name for exact match (e.g. "Standard_D8s_v5")
+        sku_name: SKU display name to narrow down (e.g. "D2 v3")
         arm_region_name: Azure region (e.g. "eastus")
         quantity: Number of units (e.g. VM instances, GB of storage). Default: 1
         hours_per_month: Usage hours per month (default: 730 = 24/7). Set to 1 for flat monthly rates.
@@ -116,6 +125,7 @@ async def estimate_cost(
     """
     items = await _client.query_prices(
         service_name=service_name,
+        arm_sku_name=arm_sku_name,
         sku_name=sku_name,
         arm_region_name=arm_region_name,
         currency_code=currency_code,
@@ -153,6 +163,7 @@ async def estimate_cost(
 @mcp.tool()
 async def compare_regions(
     service_name: str,
+    arm_sku_name: str | None = None,
     sku_name: str | None = None,
     product_name: str | None = None,
     regions: list[str] | None = None,
@@ -164,13 +175,15 @@ async def compare_regions(
 
     Args:
         service_name: Azure service name (e.g. "Virtual Machines")
-        sku_name: SKU name (e.g. "D2 v3")
+        arm_sku_name: ARM SKU name for exact match (e.g. "Standard_D8s_v5")
+        sku_name: SKU display name (e.g. "D2 v3")
         product_name: Product name for more specific filtering
         regions: List of region names to compare. If omitted, shows all available regions.
         currency_code: Currency code (default: USD)
     """
     items = await _client.query_prices(
         service_name=service_name,
+        arm_sku_name=arm_sku_name,
         sku_name=sku_name,
         product_name=product_name,
         currency_code=currency_code,

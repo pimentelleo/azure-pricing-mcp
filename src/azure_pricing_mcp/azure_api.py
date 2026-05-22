@@ -33,6 +33,7 @@ class AzurePricingClient:
         *,
         service_name: str | None = None,
         arm_region_name: str | None = None,
+        arm_sku_name: str | None = None,
         sku_name: str | None = None,
         product_name: str | None = None,
         meter_name: str | None = None,
@@ -47,6 +48,7 @@ class AzurePricingClient:
         filters = _build_filter(
             service_name=service_name,
             arm_region_name=arm_region_name,
+            arm_sku_name=arm_sku_name,
             sku_name=sku_name,
             product_name=product_name,
             meter_name=meter_name,
@@ -101,6 +103,7 @@ def _build_filter(
     *,
     service_name: str | None = None,
     arm_region_name: str | None = None,
+    arm_sku_name: str | None = None,
     sku_name: str | None = None,
     product_name: str | None = None,
     meter_name: str | None = None,
@@ -113,6 +116,8 @@ def _build_filter(
         clauses.append(f"serviceName eq '{_escape(service_name)}'")
     if arm_region_name:
         clauses.append(f"armRegionName eq '{_escape(arm_region_name)}'")
+    if arm_sku_name:
+        clauses.append(f"armSkuName eq '{_escape(arm_sku_name)}'")
     if sku_name:
         clauses.append(f"skuName eq '{_escape(sku_name)}'")
     if product_name:
